@@ -14,9 +14,9 @@ class Usuario(BaseClass):
     id= Column(Integer, primary_key=True) # Define que es una columna, es de tipo entero y es una llave primaria
     nombre= Column(String(100)) # de 100 caracteres
     edad= Column(Integer)
-    domicilio= Column(String(150))
+    domicilio= Column(String(100))
     email= Column("email",String(100)) # representa que es un email, si no esta en el formato lo devuelve por ejemplo que le falte un @
-    password= Column(String(40))
+    password= Column(String(100))
     fecha_registro=Column(DateTime(timezone=True), default=datetime.datetime.now) # cuando se inserte la fecha, se hara con la zona horaria, default para que sea con la hora del dispositivo
 
 
