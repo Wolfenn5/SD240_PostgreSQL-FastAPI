@@ -147,3 +147,18 @@ async def guardar_foto(titulo:str=Form(None), descripcion:str=Form(...), foto:Up
         imagen.write(contenido)
 
     return {"titulo":titulo, "descripcion":descripcion, "foto":foto.filename}
+
+
+
+
+
+@app.get("/fotos/{id}")
+def foto_por_id(id: int, sesion:Session=Depends(generador_sesion)):
+    print ("Api consultando fotos por id")
+    return repo.foto_por_id(sesion, id) # Sin importar lo que devuelva la funcion (en este caso un objeto de tipo foto), fastapi lo convierte a JSON
+
+
+@app.get("/compras/{id}")
+def compra_por_id(id: int, sesion:Session=Depends(generador_sesion)):
+    print ("Api consultando compras por id")
+    return repo.compra_por_id(sesion, id) # Sin importar lo que devuelva la funcion (en este caso un objeto de tipo compra), fastapi lo convierte a JSON
