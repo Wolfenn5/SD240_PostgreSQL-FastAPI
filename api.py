@@ -5,7 +5,14 @@ import shutil
 import os
 import uuid
 
-# El ORM 
+# conda activate ejerciciopostgres
+# python -m uvicorn api:app --reload
+# El cliente (navegadores) leen JSON
+# Python lee diccionarios
+
+
+
+# El ORM es el puente entre la base de datos y el codigo python
 # El modelo va a tener todo menos el id
 # Los schemas es para llevar cosas a la BD, no necesita conectarse a la BD
 # El archivo de config se configura el engine (conexion a BD), class session (crear sesion), class base (hereda tablas)
