@@ -1,9 +1,13 @@
-from fastapi import FastAPI, UploadFile, File, Form
+from fastapi import FastAPI, UploadFile, File, Form, Depends
 from typing import Optional
 from pydantic import BaseModel
 import shutil
 import os
 import uuid
+
+import ORM.repo as repo # funciones para hacer consultas a la BD
+from sqlalchemy.orm import Session
+from ORM.config import generador_sesion # generador de sesiones 
 
 # conda activate ejerciciopostgres
 # python -m uvicorn api:app --reload
@@ -73,10 +77,14 @@ def compras_usuario_por_id(id: int, id_compra: int):
     return compra
 
 @app.get("/usuarios/{id}")
-def usuario_por_id(id: int):
-    print("buscando usuario por id:", id)
-    # simulamos consulta a la base:
-    return usuarios[id]
+def usuario_por_id(id: int, sesion:Session=Depends(generador_sesion)):
+    print ("Api consultando usuario por id")
+    return repo.usuario_por_id(sesion, id) # Sin importar lo que devuelva la funcion (en este caso un objeto de tipo usuario), fastapi lo convierte a JSON
+
+# # simulamos consulta a la base:
+# def usuario_por_id(id: int):
+#     print("buscando usuario por id:", id)
+#     return usuarios[id]
 
 @app.get("/usuarios")
 def lista_usuarios(*,lote:int=10,pag:int,orden:Optional[str]=None): #parametros de consulta ?lote=10&pag=1
