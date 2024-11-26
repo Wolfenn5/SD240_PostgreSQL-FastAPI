@@ -152,13 +152,17 @@ async def guardar_foto(titulo:str=Form(None), descripcion:str=Form(...), foto:Up
 
 
 
-@app.get("/fotos/{id}")
-def foto_por_id(id: int, sesion:Session=Depends(generador_sesion)):
+
+
+# Ejercicio GET pero mapeando las tablas desde modelos.py
+
+@app.get("/fotos/{id}") # se coloca -->    /fotos/1   /fotos/2 ...
+def foto_por_id(id: int, sesion:Session=Depends(generador_sesion)): # Se obtiene el id de la foto a consultar y aparte una sesion por default si es que no se genera
     print ("Api consultando fotos por id")
     return repo.foto_por_id(sesion, id) # Sin importar lo que devuelva la funcion (en este caso un objeto de tipo foto), fastapi lo convierte a JSON
 
 
-@app.get("/compras/{id}")
-def compra_por_id(id: int, sesion:Session=Depends(generador_sesion)):
+@app.get("/compras/{id}") # se coloca -->   /compras/1   /compras/2 ....
+def compra_por_id(id: int, sesion:Session=Depends(generador_sesion)): # Se obtiene el id de la compra a consultar
     print ("Api consultando compras por id")
     return repo.compra_por_id(sesion, id) # Sin importar lo que devuelva la funcion (en este caso un objeto de tipo compra), fastapi lo convierte a JSON
