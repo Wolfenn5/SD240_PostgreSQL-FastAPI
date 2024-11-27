@@ -7,6 +7,7 @@ import uuid
 
 import ORM.repo as repo # funciones para hacer consultas a la BD
 from sqlalchemy.orm import Session
+from sqlalchemy import and_
 from ORM.config import generador_sesion # generador de sesiones 
 
 # conda activate ejerciciopostgres
@@ -87,10 +88,15 @@ def usuario_por_id(id: int, sesion:Session=Depends(generador_sesion)):
 #     return usuarios[id]
 
 @app.get("/usuarios")
-def lista_usuarios(*,lote:int=10,pag:int,orden:Optional[str]=None): #parametros de consulta ?lote=10&pag=1
-    print("lote:",lote, " pag:", pag, " orden:", orden)
-    #simulamos la consulta
-    return usuarios
+def lista_usuarios(sesion:Session=Depends(generador_sesion)): 
+    print ("Api consultando todos los usuarios")
+    return repo.lista_usuarios(sesion)
+
+
+# # Simulamos consulta a la base
+# def lista_usuarios(*,lote:int=10,pag:int,orden:Optional[str]=None): #parametros de consulta ?lote=10&pag=1
+#     print("lote:",lote, " pag:", pag, " orden:", orden)
+#     return usuarios
 
 @app.post("/usuarios")
 def guardar_usuario(usuario:UsuarioBase, parametro1:str):
@@ -131,6 +137,8 @@ def borrar_usuario(id:int):
     
     return {"status_borrado", "ok"}
 
+
+
 @app.post("/fotos")
 async def guardar_foto(titulo:str=Form(None), descripcion:str=Form(...), foto:UploadFile=File(...)):
     print("titulo:", titulo)
@@ -150,6 +158,33 @@ async def guardar_foto(titulo:str=Form(None), descripcion:str=Form(...), foto:Up
 
 
 
+@app.get("/fotos")
+def lista_fotos(sesion:Session=Depends(generador_sesion)): 
+    print ("Api consultando todas las fotos")
+    return repo.lista_fotos(sesion)
+
+
+
+# "/compras?id_usuario={id_usuar}&precio={prec}"
+# http://127.0.0.1:8000/compras?id_usuario=2&precio=500
+# SELECT *FROM app.compras where id_usuario=2 AND precio>=500
+@app.get("/compras")
+def lista_compras(id_usuario:int,precio:float,sesion:Session=Depends(generador_sesion)): # primero van los parametros obligatorios y luego los opcionales, en este caso el id usuario y precio son obligatorios
+    # si se quiere que los valores sean por default habria que cambiar id_usuario:int,precio:float
+    print ("/compras?id_usuario={id_usuar}&precio={prec}")
+    return repo.lista_compras(sesion)
+
+
+
+
+
+# "/usuarios?edad={edad1}&edad={edad2}"
+# http://127.0.0.1:8000/usuarios?edad_minima=2&edad_maxima=10
+# SELECT *FROM app.usuarios where edad>=2 AND edad<=10
+@app.get("/usuarios")
+def lista_usuarios(edad_minima:int, edad_maxima:int, sesion:Session=Depends(generador_sesion)): 
+    print ("SELECT *FROM app.usuarios where edad>=2 AND edad<=10")
+    return repo.devuelve_usuarios_por_edad(sesion)
 
 
 
@@ -166,3 +201,4 @@ def foto_por_id(id: int, sesion:Session=Depends(generador_sesion)): # Se obtiene
 def compra_por_id(id: int, sesion:Session=Depends(generador_sesion)): # Se obtiene el id de la compra a consultar
     print ("Api consultando compras por id")
     return repo.compra_por_id(sesion, id) # Sin importar lo que devuelva la funcion (en este caso un objeto de tipo compra), fastapi lo convierte a JSON
+
