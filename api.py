@@ -65,6 +65,12 @@ def hola_mundo():
     return respuesta
 
 
+#########################
+
+# Usuarios
+
+#########################
+
 @app.get("/usuarios/{id}/compras/{id_compra}")
 def compras_usuario_por_id(id: int, id_compra: int):
     print("buscando compra con id:", id_compra, " del usuario con id:", id)
@@ -77,27 +83,54 @@ def compras_usuario_por_id(id: int, id_compra: int):
 
     return compra
 
+
+# # Funcion para todos los usuarios (simple)
+# @app.get("/usuarios")
+# def lista_usuarios(sesion:Session=Depends(generador_sesion)): 
+#     print ("Api consultando todos los usuarios")
+#     return repo.lista_usuarios(sesion)
+
+# # simulando consulta a una BD:
+# def usuario_por_id(id: int):
+#     print("buscando usuario por id:", id)
+#     return usuarios[id]
+
+
+
+# # Simulando consulta a una BD pero con parametros de consulta
+# @app.get("/usuarios")
+# def lista_usuarios(*,lote:int=10,pag:int,orden:Optional[str]=None): #parametros de consulta ?lote=10&pag=1
+#     print("lote:",lote, " pag:", pag, " orden:", orden)
+#     return usuarios
+
+
+
+# Funcion para consultar usuarios por id con BD
+# --> /usuarios/1
 @app.get("/usuarios/{id}")
 def usuario_por_id(id: int, sesion:Session=Depends(generador_sesion)):
     print ("Api consultando usuario por id")
     return repo.usuario_por_id(sesion, id) # Sin importar lo que devuelva la funcion (en este caso un objeto de tipo usuario), fastapi lo convierte a JSON
 
-# # simulamos consulta a la base:
-# def usuario_por_id(id: int):
-#     print("buscando usuario por id:", id)
-#     return usuarios[id]
 
+
+
+# Funcion para consultar usuarios por edad y ademas todos los usuarios con BD
+# SELECT *FROM app.usuarios where edad>=2 AND edad<=10
+
+# "/usuarios?edad={edad1}&edad={edad2}"
+# --> /usuarios?edad_minima=2&edad_maxima=10         para consultar por edad
+# --> /usuarios                                      para consultar todos
 @app.get("/usuarios")
-def lista_usuarios(sesion:Session=Depends(generador_sesion)): 
-    print ("Api consultando todos los usuarios")
-    return repo.lista_usuarios(sesion)
+def lista_usuarios(edad_minima:int, edad_maxima:int, sesion:Session=Depends(generador_sesion)): 
+    print ("SELECT * from app.usuarios where edad>=2 AND edad<=10")
+    return repo.devuelve_usuarios_por_edad(sesion, edad_minima, edad_maxima)
 
 
-# # Simulamos consulta a la base
-# def lista_usuarios(*,lote:int=10,pag:int,orden:Optional[str]=None): #parametros de consulta ?lote=10&pag=1
-#     print("lote:",lote, " pag:", pag, " orden:", orden)
-#     return usuarios
 
+
+
+# Funcion para insertar un nuevo usuario
 @app.post("/usuarios")
 def guardar_usuario(usuario:UsuarioBase, parametro1:str):
     print("usuario a guardar:", usuario, ", parametro1:", parametro1)
@@ -113,6 +146,9 @@ def guardar_usuario(usuario:UsuarioBase, parametro1:str):
 
     return usr_nuevo
 
+
+
+# Funcion para actualizar datos de un usuario
 @app.put("/usuario/{id}")
 def actualizar_usuario(id:int, usuario:UsuarioBase):
     #simulamos consulta
@@ -124,6 +160,9 @@ def actualizar_usuario(id:int, usuario:UsuarioBase):
 
     return usr_act
     
+
+
+# Funcion para borrar un usuario    
 @app.delete("/usuario/{id}")
 def borrar_usuario(id:int):
     #simulamos una consulta
@@ -139,6 +178,17 @@ def borrar_usuario(id:int):
 
 
 
+
+
+
+
+#########################
+
+# Fotos
+
+#########################
+
+# Funcion para introducir fotos
 @app.post("/fotos")
 async def guardar_foto(titulo:str=Form(None), descripcion:str=Form(...), foto:UploadFile=File(...)):
     print("titulo:", titulo)
@@ -158,6 +208,7 @@ async def guardar_foto(titulo:str=Form(None), descripcion:str=Form(...), foto:Up
 
 
 
+# Funcion para consultar todas las fotos con BD
 @app.get("/fotos")
 def lista_fotos(sesion:Session=Depends(generador_sesion)): 
     print ("Api consultando todas las fotos")
@@ -165,39 +216,47 @@ def lista_fotos(sesion:Session=Depends(generador_sesion)):
 
 
 
-# "/compras?id_usuario={id_usuar}&precio={prec}"
-# http://127.0.0.1:8000/compras?id_usuario=2&precio=500
-# SELECT *FROM app.compras where id_usuario=2 AND precio>=500
-@app.get("/compras")
-def lista_compras(id_usuario:int,precio:float,sesion:Session=Depends(generador_sesion)): # primero van los parametros obligatorios y luego los opcionales, en este caso el id usuario y precio son obligatorios
-    # si se quiere que los valores sean por default habria que cambiar id_usuario:int,precio:float
-    print ("/compras?id_usuario={id_usuar}&precio={prec}")
-    return repo.lista_compras(sesion)
-
-
-
-
-
-# "/usuarios?edad={edad1}&edad={edad2}"
-# http://127.0.0.1:8000/usuarios?edad_minima=2&edad_maxima=10
-# SELECT *FROM app.usuarios where edad>=2 AND edad<=10
-@app.get("/usuarios")
-def lista_usuarios(edad_minima:int, edad_maxima:int, sesion:Session=Depends(generador_sesion)): 
-    print ("SELECT *FROM app.usuarios where edad>=2 AND edad<=10")
-    return repo.devuelve_usuarios_por_edad(sesion)
-
-
-
-
-# Ejercicio GET pero mapeando las tablas desde modelos.py
-
+# Ejercicio GET pero mapeando las tablas desde modelos.py con BD
 @app.get("/fotos/{id}") # se coloca -->    /fotos/1   /fotos/2 ...
 def foto_por_id(id: int, sesion:Session=Depends(generador_sesion)): # Se obtiene el id de la foto a consultar y aparte una sesion por default si es que no se genera
     print ("Api consultando fotos por id")
     return repo.foto_por_id(sesion, id) # Sin importar lo que devuelva la funcion (en este caso un objeto de tipo foto), fastapi lo convierte a JSON
 
 
-@app.get("/compras/{id}") # se coloca -->   /compras/1   /compras/2 ....
+
+
+
+
+#########################
+
+# Compras
+
+#########################
+
+
+
+
+# Funcion para consultar las compras de un usuario 
+# SELECT *FROM app.compras where id_usuario=2 AND precio>=500
+
+# "/compras?id_usuario={id_usuar}&precio={prec}"
+# -->  compras?id_usuario=2&precio=500         para consultar las compras del usuario 2 y precio>=500
+@app.get("/compras")
+def lista_compras(id_usuario:int,precio:float,sesion:Session=Depends(generador_sesion)): # primero van los parametros obligatorios y luego los opcionales, en este caso el id usuario y precio son obligatorios
+    # si se quiere que los valores sean por default habria que cambiar id_usuario:int,precio:float
+    print ("/compras?id_usuario={id_usuar}&precio={prec}")
+    return repo.devuelve_compras_por_usuario_precio(sesion, id_usuario, precio)
+
+
+
+
+# Ejercicio GET pero mapeando las tablas desde modelos.py
+# Funcion para consultar compras por id
+# SELECT * from app.compras where id=1
+
+# "/compras/{id}"
+# -->   /compras/1
+@app.get("/compras/{id}") 
 def compra_por_id(id: int, sesion:Session=Depends(generador_sesion)): # Se obtiene el id de la compra a consultar
     print ("Api consultando compras por id")
     return repo.compra_por_id(sesion, id) # Sin importar lo que devuelva la funcion (en este caso un objeto de tipo compra), fastapi lo convierte a JSON
