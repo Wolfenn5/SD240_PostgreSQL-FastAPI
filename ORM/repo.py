@@ -65,10 +65,57 @@ def borrar_usuario_por_id(sesion:Session, id_usuario:int):
 # GET '/usuarios/{id}/fotos/'
 # SELECT * from app.fotos where id_usuario=id
 def fotos_por_id_usuario(sesion:Session,id_usr:int):
-    print("SELECT * from app.fotos where id_usuario=id")
-    return sesion.query(modelos.Foto).filter(modelos.Foto.id_usuario==id_usr).all()
+    print("SELECT * from app.fotos where id_usuario=",id_usr)
+    return sesion.query(modelos.Foto).filter(modelos.Foto.id_usuario==id_usr).all() # devuelve una lista de objetos
 
 
+
+
+
+
+# Funcion para borrar fotos por un id de usuario dado con BD
+# DELETE 'usuarios/{id}/fotos'
+# DELETE * from app.fotos where id_usuario=
+def borrar_fotos_por_id_usuario(sesion:Session,id_usuario:int):
+    print("DELETE * from app.fotos where id_usuario=", id_usuario)
+    # 1.- Antes de borrar primero se va a verificar que existe con un SELECT
+    fotos_usr = fotos_por_id_usuario(sesion,id_usuario) 
+    # 2.- Se borra, pero como hay que hacer un delete por cada foto se usa un iterador
+    if fotos_usr is not None: # Si existe, entonces itera
+        for foto_usuario in fotos_usr:
+            sesion.delete(foto_usuario)
+            # 3.- Se confirma que se hizo el cambio, se hace asi para que se hagan todos juntos si es que se borran muchos usarios 
+        sesion.commit() # Se hacen todos los cambios de un "jalon"
+    respuesta = {
+        "mensaje": "fotos del usuario eliminadas"
+    }
+    return respuesta
+
+
+# Funcion para buscar compras por un id de usuario dado
+# GET '/usuarios/{id}/compras/'
+# SELECT * from app.compras where id_usuario=id
+def compras_por_id_usuario(sesion:Session,id_usr:int):
+    print("SELECT * from app.compras where id_usuario=id")
+    return sesion.query(modelos.Compra).filter(modelos.Compra.id_usuario==id_usr).all() # devuelve una lista de objetos
+
+
+
+# Funcion para borrar compras por un id de usuario dado
+# DELETE 'usuarios/{id}/compras'
+# DELETE * from app.compras where id_usuario=
+def borrar_compras_por_id_usuario(sesion:Session,id_usuario:int):
+    print("DELETE * from app.compras where id_usuario=", id_usuario)
+    compras_usr = compras_por_id_usuario(sesion,id_usuario) 
+    # Como hay que hacer un delete por cada foto se usa un iterador
+    if compras_usr is not None: # Si existe, entonces itera
+        for compra_usuario in compras_usr:
+            sesion.delete(compra_usuario)
+        sesion.commit()
+    respuesta = {
+        "mensaje": "compras del usuario eliminadas"
+    }
+    return respuesta
 
 
 
@@ -96,8 +143,7 @@ def foto_por_id(sesion:Session,id_foto:int): # sesion de tipo Session de sqlalch
 
 
 
-# Funcion para borrar fotos por un id de usuario dado con BD
-def borrar_fotos_por_id_usuario():
+
 
 
 

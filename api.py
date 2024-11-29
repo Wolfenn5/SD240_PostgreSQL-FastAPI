@@ -126,6 +126,15 @@ def fotos_por_id_usr(id:int, sesion:Session=Depends(generador_sesion)):
 
 
 
+# Funcion para consultar las compras de un usuario con BD
+# --> /usuarios/2/compras
+@app.get("/usuarios/{id}/compras")
+def compras_por_id_usr(id:int, sesion:Session=Depends(generador_sesion)):
+    print("API consultando compras del usuario", id)
+    return repo.compras_por_id_usuario(sesion,id)
+
+
+
 # Funcion para consultar usuarios por edad y ademas todos los usuarios con BD
 # SELECT *FROM app.usuarios where edad>=2 AND edad<=10
 
@@ -173,11 +182,19 @@ def actualizar_usuario(id:int, usuario:UsuarioBase):
     
 
 
-# Funcion para borrar un usuario    
+
+
+# Funcion para borrar un usuario
+# DELETE from app.usuarios where id= {id_usuario}    
 @app.delete("/usuario/{id}")
 def borrar_usuario(id:int, sesion:Session=Depends(generador_sesion)):
+    # Antes de borrar el usuario hay que llamar a borrar fotos por id usuario y borrar compras por id usuario
+    repo.borrar_compras_por_id_usuario(sesion,id)
+    repo.borrar_fotos_por_id_usuario(sesion,id)
+    # Y ahora si se puede borrar el usuario
     repo.borrar_usuario_por_id(sesion,id)
     return {"usuario_borrado", "ok"}
+
 
 # #simulando consulta a BD
 # def borrar_usuario(id:int):
