@@ -2,6 +2,16 @@ import ORM.modelos as modelos
 from sqlalchemy.orm import Session 
 from sqlalchemy import and_
 
+
+
+
+#########################
+
+# Usuarios
+
+#########################
+
+
 # Esta funcion es llamada por api.py
 # Para atender GET '/usuarios/{id}'
 # select * from app.usuarios where id = id_usuario      (id=2)
@@ -21,11 +31,82 @@ def lista_usuarios(sesion:Session): # sesion de tipo Session de sqlalchemy
     # devuelve un objeto de tipo usuario y la sesion se destruye automaticamente
 
 
+
+# Funcion para devolver una lista de usuarios de un rango de edad
+# SELECT * from app.usuarios where edad>=2 AND edad<=10
+# "/usuarios?edad={edad1}&edad={edad2}"
+def devuelve_usuarios_por_edad(sesion:Session,edad_minima:int, edad_maxima:int):
+    print("SELECT * from app.usuarios where edad>=edad_minima AND edad<=edad_maxima")
+    return sesion.query(modelos.Usuario).filter(and_(modelos.Usuario.edad>=edad_minima, modelos.Usuario.edad<=edad_maxima)).all()
+
+
+
+# Funcion para borrar usuario con BD
+# DELETE from app.usuarios where id= {id_usuario}
+# '/usuarios/{id}'
+def borrar_usuario_por_id(sesion:Session, id_usuario:int):
+    print("DELETE from app.usuarios where id= ", id_usuario)
+    # 1.- Antes de borrar primero se va a verificar que existe con un SELECT
+    usr= usuario_por_id(sesion,id_usuario) # la sesion se pasa como un argumento y no como sesion:Session, porque se crearia una doble sesion
+    # 2.- Se borra
+    if usr is not None:
+        sesion.delete(usr)
+        # 3.- Se confirma que se hizo el cambio, se hace asi para que se hagan todos juntos si es que se borran muchos usarios 
+        sesion.commit() # Se hacen todos los cambios de un "jalon"
+    respuesta = {
+        "mensaje": "usuario eliminado"
+    }
+    return respuesta
+
+
+
+
+# Funcion para buscar fotos por un id de usuario dado
+# GET '/usuarios/{id}/fotos/'
+# SELECT * from app.fotos where id_usuario=id
+def fotos_por_id_usuario(sesion:Session,id_usr:int):
+    print("SELECT * from app.fotos where id_usuario=id")
+    return sesion.query(modelos.Foto).filter(modelos.Foto.id_usuario==id_usr).all()
+
+
+
+
+
+#########################
+
+# Fotos
+
+#########################
+
 # Funcion para obtener la lista de todas las fotos
 def lista_fotos(sesion:Session): # sesion de tipo Session de sqlalchemy 
     print("SELECT * from app.fotos")
     return sesion.query(modelos.Foto).all() # tabla a consultar PERO de modelos  y el .all es para que muestre todos con ese filtro  
     # devuelve un objeto de tipo usuario y la sesion se destruye automaticamente
+
+
+# Funcion para devolver una foto dado un id
+# SELECT * from app.fotos where id= 1 
+# "/fotos/{id}"
+def foto_por_id(sesion:Session,id_foto:int): # sesion de tipo Session de sqlalchemy y el id_foto de tipo entero
+    print("SELECT * from app.fotos where id= ")
+    return sesion.query(modelos.Foto).filter(modelos.Foto.id==id_foto).first() # tabla a consultar PERO de modelos.py para tabla Foto
+    # devuelve un objeto de tipo foto y la sesion se destruye automaticamente
+
+
+
+
+# Funcion para borrar fotos por un id de usuario dado con BD
+def borrar_fotos_por_id_usuario():
+
+
+
+#########################
+
+# Compras
+
+#########################
+
 
 
 # Funcion para obtener la lista de todas las compras
@@ -39,7 +120,6 @@ def lista_compras(sesion:Session): # sesion de tipo Session de sqlalchemy
 
 # Funcion para devolver las compras de un usuario
 # SELECT * from app.compras where id_usuario=2 AND precio>=500
-
 # "/compras?id_usuario={id_usuar}&precio={prec}"
 def devuelve_compras_por_usuario_precio(sesion:Session,id_usuar:int,prec:float):
     print("SELECT * from app.compras where id_usuario=id_usuar AND precio>=prec")
@@ -47,38 +127,18 @@ def devuelve_compras_por_usuario_precio(sesion:Session,id_usuar:int,prec:float):
 
 
 
-
-
-# Funcion para devolver una lista de usuarios de un rango de edad
-# SELECT * from app.usuarios where edad>=2 AND edad<=10
-
-# "/usuarios?edad={edad1}&edad={edad2}"
-def devuelve_usuarios_por_edad(sesion:Session,edad_minima:int, edad_maxima:int):
-    print("SELECT * from app.usuarios where edad>=edad_minima AND edad<=edad_maxima")
-    return sesion.query(modelos.Usuario).filter(and_(modelos.Usuario.edad>=edad_minima, modelos.Usuario.edad<=edad_maxima)).all()
-
-
-
-
-# Ejercicios GET para la tabla de fotos y compras
-
-# Funcion para devolver una foto dado un id
-# SELECT * from app.fotos where id= 1 
-
-# "/fotos/{id}"
-def foto_por_id(sesion:Session,id_foto:int): # sesion de tipo Session de sqlalchemy y el id_foto de tipo entero
-    print("SELECT * from app.fotos where id= ")
-    return sesion.query(modelos.Foto).filter(modelos.Foto.id==id_foto).first() # tabla a consultar PERO de modelos.py para tabla Foto
-    # devuelve un objeto de tipo foto y la sesion se destruye automaticamente
-
-
-
-
 # Funcion para deolver una compra dado un id
 # SELECT * from app.compras where id=3
-
 # "/compras/{id}"
 def compra_por_id(sesion:Session,id_compra:int): # sesion de tipo Session de sqlalchemy y el id_compra de tipo entero
     print("SELECT * from app.compras where id= ")
     return sesion.query(modelos.Compra).filter(modelos.Compra.id==id_compra).first() # tabla a consultar PERO de modelos.py para tabla Compra  
     # devuelve un objeto de tipo compra y la sesion se destruye automaticamente
+
+
+
+
+
+
+
+
