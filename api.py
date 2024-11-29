@@ -10,8 +10,10 @@ from sqlalchemy.orm import Session
 from sqlalchemy import and_
 from ORM.config import generador_sesion # generador de sesiones 
 
-# conda activate ejerciciopostgres
-# python -m uvicorn api:app --reload
+# conda create --name ejerciciopostgres   --> Para crear ambiente
+# conda activate ejerciciopostgres        --> Para activar ambiente
+# python -m uvicorn api:app --reload      --> Para levantar el servidor
+
 # El cliente (navegadores) leen JSON
 # Python lee diccionarios
 
