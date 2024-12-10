@@ -144,6 +144,30 @@ def actualiza_usuario(sesion:Session, id_usuario:int, usr_esquema:esquemas.Usuar
 
 
 
+
+# Insertar un usuario
+# POST '/usuarios'
+def guardar_usuario(sesion:Session, usr_nuevo:esquemas.UsuarioBase): # usr_nuevo es lo que se recibe del usuario
+    # 1.- Crear un nuevo objeto de la clase modelo Usuario
+    usr_bd = modelos.Usuario()
+    # 2.- Llenar el nuevo objeto con los parametros que pasa el usuario
+    usr_bd.nombre = usr_nuevo.nombre
+    usr_bd.edad = usr_nuevo.edad
+    usr_bd.domicilio = usr_nuevo.domicilio
+    usr_bd.email = usr_nuevo.email
+    usr_bd.password = usr_nuevo.password
+    # 3.- Insertar el nuevo objeto a la BD
+    sesion.add(usr_bd)
+    # 4.- Confirmar los cambios
+    sesion.commit()
+    # 5.- Refrescar/actualizar los cambios
+    sesion.refresh(usr_bd)
+    return usr_bd
+
+
+
+
+
 #########################
 
 # Fotos

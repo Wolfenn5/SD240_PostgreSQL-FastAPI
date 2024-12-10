@@ -151,21 +151,40 @@ def lista_usuarios(edad_minima:int, edad_maxima:int, sesion:Session=Depends(gene
 
 
 
-# Funcion para insertar un nuevo usuario
-@app.post("/usuarios")
-def guardar_usuario(usuario:UsuarioBase, parametro1:str):
-    print("usuario a guardar:", usuario, ", parametro1:", parametro1)
-    #simulamos guardado en la base.
+# Funcion para insertar un nuevo usuario sin BD 
+# @app.post("/usuarios")
+# def guardar_usuario(usuario:UsuarioBase, parametro1:str):
+#     print("usuario a guardar:", usuario, ", parametro1:", parametro1)
+#     #simulamos guardado en la base.
     
-    usr_nuevo = {}
-    usr_nuevo["id"] = len(usuarios)
-    usr_nuevo["nombre"] = usuario.nombre
-    usr_nuevo["edad"] = usuario.edad
-    usr_nuevo["domicilio"] = usuario.domicilio
+#     usr_nuevo = {}
+#     usr_nuevo["id"] = len(usuarios)
+#     usr_nuevo["nombre"] = usuario.nombre
+#     usr_nuevo["edad"] = usuario.edad
+#     usr_nuevo["domicilio"] = usuario.domicilio
 
-    usuarios.append(usuario)
+#     usuarios.append(usuario)
 
-    return usr_nuevo
+#     return usr_nuevo
+
+
+# Funcion para insertar un nuevo usuario con BD 
+@app.post("/usuarios")
+def guardar_usuario(usuario:esquemas.UsuarioBase, sesion:Session=Depends(generador_sesion)):
+    print(usuario)
+    return repo.guardar_usuario(sesion, usuario)
+    
+
+"""
+Para las fotos y compras y antes verificar que el usuario exista
+@app.post("/usuarios/{id}/compras")
+@app.post("/usuarios/{id}/fotos")
+
+"""
+
+
+
+
 
 
 # Funcion para actualizar datos de un usuario sin BD
