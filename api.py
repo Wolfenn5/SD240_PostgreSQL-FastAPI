@@ -9,6 +9,7 @@ import ORM.repo as repo # funciones para hacer consultas a la BD
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
 from ORM.config import generador_sesion # generador de sesiones 
+import ORM.esquemas as esquemas
 
 # conda create --name ejerciciopostgres   --> Para crear ambiente
 # conda activate ejerciciopostgres        --> Para activar ambiente
@@ -167,19 +168,24 @@ def guardar_usuario(usuario:UsuarioBase, parametro1:str):
     return usr_nuevo
 
 
+# Funcion para actualizar datos de un usuario sin BD
+# @app.put("/usuario/{id}")
+# def actualizar_usuario(id:int, usuario:UsuarioBase):
+#     #simulamos consulta
+#     usr_act = usuarios[id]
+#     #simulamos la actualización
+#     usr_act["nombre"] = usuario.nombre
+#     usr_act["edad"] = usuario.edad
+#     usr_act["domicilio"] = usuario.domicilio    
 
-# Funcion para actualizar datos de un usuario
+#     return usr_act
+
+
+
+# Funcion para actualizar datos de un usuario con BD   
 @app.put("/usuario/{id}")
-def actualizar_usuario(id:int, usuario:UsuarioBase):
-    #simulamos consulta
-    usr_act = usuarios[id]
-    #simulamos la actualización
-    usr_act["nombre"] = usuario.nombre
-    usr_act["edad"] = usuario.edad
-    usr_act["domicilio"] = usuario.domicilio    
-
-    return usr_act
-    
+def actualizar_usuario(id:int, info_usuario:esquemas.UsuarioBase,sesion:Session=Depends(generador_sesion)):
+    return repo.actualiza_usuario(sesion, id, info_usuario)
 
 
 
@@ -258,6 +264,12 @@ def foto_por_id(id: int, sesion:Session=Depends(generador_sesion)): # Se obtiene
 
 
 
+# Funcion para actualizar datos de fotos con BD   
+@app.put("/fotos/{id}")
+def actualizar_fotos(id:int, info_fotos:esquemas.FotoBase,sesion:Session=Depends(generador_sesion)):
+    return repo.actualiza_fotos(sesion, id, info_fotos)
+
+
 
 #########################
 
@@ -293,3 +305,9 @@ def compra_por_id(id: int, sesion:Session=Depends(generador_sesion)): # Se obtie
     print ("Api consultando compras por id")
     return repo.compra_por_id(sesion, id) # Sin importar lo que devuelva la funcion (en este caso un objeto de tipo compra), fastapi lo convierte a JSON
 
+
+
+# Funcion para actualizar datos de compras con BD   
+@app.put("/compras/{id}")
+def actualizar_compras(id:int, info_compras:esquemas.CompraBase,sesion:Session=Depends(generador_sesion)):
+    return repo.actualiza_compras(sesion, id, info_compras)

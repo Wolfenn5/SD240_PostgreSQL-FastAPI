@@ -1,8 +1,7 @@
 import ORM.modelos as modelos
 from sqlalchemy.orm import Session 
 from sqlalchemy import and_
-
-
+import ORM.esquemas as esquemas
 
 
 #########################
@@ -119,6 +118,32 @@ def borrar_compras_por_id_usuario(sesion:Session,id_usuario:int):
 
 
 
+
+# Funcion para actualizar datos de usuario
+# PUT '/usuarios/{id}'
+def actualiza_usuario(sesion:Session, id_usuario:int, usr_esquema:esquemas.UsuarioBase):
+    # 1.- Primero se verifica que el usuario exista
+    usr_bd = usuario_por_id(sesion, id_usuario) # objeto de la clase de la BD
+    # 2.- Si existe, entonces se actualizan los datos
+    if usr_bd is not None:
+        usr_bd.nombre = usr_esquema.nombre
+        usr_bd.edad = usr_esquema.edad
+        usr_bd.domicilio = usr_esquema.domicilio
+        usr_bd.email = usr_esquema.email
+        usr_bd.password = usr_esquema.password
+    # 3.- Confirmar los cambios
+        sesion.commit()
+    # 4.- Refrescar/actualizar los cambios
+        sesion.refresh(usr_bd)
+    # 5.- Imprimir los datos nuevos
+        print(usr_esquema)
+        return (usr_esquema)
+    else:
+        respuesta = {"mensaje" : "No existe el usuario"}
+        return respuesta
+
+
+
 #########################
 
 # Fotos
@@ -144,7 +169,23 @@ def foto_por_id(sesion:Session,id_foto:int): # sesion de tipo Session de sqlalch
 
 
 
-
+def actualiza_fotos(sesion:Session, id_foto:int, foto_esquema:esquemas.FotoBase):
+    # 1.- Primero se verifica que la foto exista
+    foto_bd = foto_por_id(sesion, id_foto) # objeto de la clase de la BD
+    # 2.- Si existe, entonces se actualizan los datos
+    if foto_bd is not None:
+        foto_bd.titulo = foto_esquema.titulo
+        foto_bd.descripcion = foto_esquema.descripcion
+    # 3.- Confirmar los cambios
+        sesion.commit()
+    # 4.- Refrescar/actualizar los cambios
+        sesion.refresh(foto_bd)
+    # 5.- Imprimir los datos nuevos
+        print(foto_esquema)
+        return (foto_esquema)
+    else:
+        respuesta = {"mensaje" : "No existe la foto"}
+        return respuesta
 
 
 #########################
@@ -184,7 +225,20 @@ def compra_por_id(sesion:Session,id_compra:int): # sesion de tipo Session de sql
 
 
 
-
-
-
-
+def actualiza_compras(sesion:Session, id_compra:int, compra_esquema:esquemas.CompraBase):
+    # 1.- Primero se verifica que la compra exista
+    compra_bd = compra_por_id(sesion, id_compra) # objeto de la clase de la BD
+    # 2.- Si existe, entonces se actualizan los datos
+    if compra_bd is not None:
+        compra_bd.producto = compra_esquema.producto
+        compra_bd.precio = compra_esquema.precio
+    # 3.- Confirmar los cambios
+        sesion.commit()
+    # 4.- Refrescar/actualizar los cambios
+        sesion.refresh(compra_bd)
+    # 5.- Imprimir los datos nuevos
+        print(compra_esquema)
+        return (compra_esquema)
+    else:
+        respuesta = {"mensaje" : "No existe la compra"}
+        return respuesta
