@@ -290,6 +290,14 @@ def actualizar_fotos(id:int, info_fotos:esquemas.FotoBase,sesion:Session=Depends
 
 
 
+# Funcion para guardar/insertar una nueva foto con BD 
+@app.post("/usuarios/{id}/fotos")
+def guardar_foto(id_usuario:int, foto:esquemas.FotoBase, sesion:Session=Depends(generador_sesion)):
+    print(foto)
+    return repo.guardar_foto(sesion,id_usuario, foto)
+
+
+
 #########################
 
 # Compras
@@ -330,3 +338,11 @@ def compra_por_id(id: int, sesion:Session=Depends(generador_sesion)): # Se obtie
 @app.put("/compras/{id}")
 def actualizar_compras(id:int, info_compras:esquemas.CompraBase,sesion:Session=Depends(generador_sesion)):
     return repo.actualiza_compras(sesion, id, info_compras)
+
+
+
+# Funcion para guardar/insertar una nueva compra con BD 
+@app.post("/usuarios/{id}/compras")
+def guardar_compra(id_usuario:int, compra:esquemas.CompraBase, sesion:Session=Depends(generador_sesion)):
+    print(compra)
+    return repo.guardar_compra(sesion,id_usuario, compra)

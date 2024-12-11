@@ -212,6 +212,34 @@ def actualiza_fotos(sesion:Session, id_foto:int, foto_esquema:esquemas.FotoBase)
         return respuesta
 
 
+
+# Insertar una foto
+# POST '/usuarios'
+def guardar_foto(sesion:Session, id_usuario:int, foto_nueva:esquemas.FotoBase): 
+    # 1.- Verificar que el usuario existe
+    foto_bd = usuario_por_id(sesion, id_usuario)
+    # 2.- Si existe, Crear un nuevo objeto de la clase modelo Foto
+    if foto_bd is not None: 
+        foto_bd = modelos.Foto()
+    # 3.- Llenar el nuevo objeto con los parametros que pasa el usuario
+        foto_bd.titulo = foto_nueva.titulo
+        foto_bd.descripcion = foto_nueva.descripcion
+        foto_bd.id_usuario = id_usuario
+    # 4.- Insertar el nuevo objeto a la BD
+        sesion.add(foto_bd)
+    # 5.- Confirmar los cambios
+        sesion.commit()
+    # 6.- Refrescar/actualizar los cambios
+        sesion.refresh(foto_bd)
+        return foto_bd
+    else:
+        respuesta = {"mensaje" : "No existe el usuario"}
+        return respuesta
+
+
+
+
+
 #########################
 
 # Compras
@@ -265,4 +293,29 @@ def actualiza_compras(sesion:Session, id_compra:int, compra_esquema:esquemas.Com
         return (compra_esquema)
     else:
         respuesta = {"mensaje" : "No existe la compra"}
+        return respuesta
+
+
+
+# Insertar una compra
+# POST '/usuarios'
+def guardar_compra(sesion:Session, id_usuario:int, compra_nueva:esquemas.CompraBase): 
+    # 1.- Verificar que el usuario existe
+    compra_bd = usuario_por_id(sesion, id_usuario)
+    # 2.- Si existe, Crear un nuevo objeto de la clase modelo Foto
+    if compra_bd is not None: 
+        compra_bd = modelos.Compra()
+    # 3.- Llenar el nuevo objeto con los parametros que pasa el usuario
+        compra_bd.producto = compra_nueva.producto
+        compra_bd.precio = compra_nueva.precio
+        compra_bd.id_usuario = id_usuario
+    # 4.- Insertar el nuevo objeto a la BD
+        sesion.add(compra_bd)
+    # 5.- Confirmar los cambios
+        sesion.commit()
+    # 6.- Refrescar/actualizar los cambios
+        sesion.refresh(compra_bd)
+        return compra_bd
+    else:
+        respuesta = {"mensaje" : "No existe el usuario"}
         return respuesta
